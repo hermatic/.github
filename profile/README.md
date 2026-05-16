@@ -80,19 +80,19 @@ Early repositories and architecture components will appear here as the platform 
 
 ---
 
-## Inspiration
+The goal is narrower:
 
-HERMATIC exists in the space between:
-- :contentReference[oaicite:0]{index=0}
-- :contentReference[oaicite:1]{index=1}
-- :contentReference[oaicite:2]{index=2}
-- and modern image-based infrastructure systems.
+- a minimal host system
+- reproducible deployments
+- signed system artifacts
+- atomic updates
+- declarative configuration
+- strong trust boundaries
 
-But with a stronger focus on cohesion, restraint, and infrastructure-grade operational design.
+HERMATIC is designed as operating infrastructure: a stable substrate for systems that need to remain predictable over time.
 
 ---
 
 ## License
 
-Repository licenses vary by project.
-See individual repositories for details.
+
