@@ -1,0 +1,155 @@
+<svg width="100%" viewBox="0 0 680 600" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Hermatic partition layout and update cycle</title>
+  <desc>Three-stage diagram: shipped image, first boot additions via systemd-repart, and the A/B update cycle with automatic rollback.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      text { font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace; fill: #c8c8c8; }
+      .th  { font-size: 13px; font-weight: 600; fill: #e2e2e2; }
+      .ts  { font-size: 11px; fill: #888; }
+      .lsm { font-size: 10px; fill: #555; }
+      .ghost { opacity: 0.22; }
+      .p-gray   { fill: #1e1e22; stroke: #555; }
+      .p-purple { fill: #1e1a2e; stroke: #6c52b0; }
+      .p-teal   { fill: #12252a; stroke: #2a7a72; }
+      .p-amber  { fill: #241e0e; stroke: #8a6a10; }
+      .p-green  { fill: #141f0e; stroke: #3a6a10; }
+      .p-coral  { fill: #251510; stroke: #8a3a20; }
+      .p-soft   { fill: #18181e; stroke: #444; }
+      .leg-purple { fill: #6c52b0; }
+      .leg-teal   { fill: #2a7a72; }
+      .leg-amber  { fill: #8a6a10; }
+      .leg-green  { fill: #3a6a10; }
+      .leg-coral  { fill: #8a3a20; }
+      .div { stroke: #333; stroke-width: 0.5; stroke-dasharray: 4 4; }
+      .arr { stroke: #555; stroke-width: 1; fill: none; }
+    </style>
+  </defs>
+
+  <!-- Column headers -->
+  <text class="lsm" x="119" y="18" text-anchor="middle">SHIPPED IMAGE</text>
+  <text class="lsm" x="358" y="18" text-anchor="middle">FIRST BOOT — systemd-repart adds</text>
+  <text class="lsm" x="590" y="18" text-anchor="middle">UPDATE CYCLE</text>
+
+  <!-- Column dividers — stop at y=540, just above the legend rule -->
+  <line class="div" x1="238" y1="26" x2="238" y2="540"/>
+  <line class="div" x1="478" y1="26" x2="478" y2="540"/>
+
+  <!-- ═══ COL 1: SHIPPED IMAGE ═══ -->
+
+  <rect class="p-gray" x="40" y="40" width="178" height="46" rx="4" stroke-width="0.5"/>
+  <text class="th" x="129" y="57" text-anchor="middle" dominant-baseline="central">ESP</text>
+  <text class="ts" x="129" y="75" text-anchor="middle" dominant-baseline="central">systemd-boot + UKI</text>
+
+  <rect class="p-purple" x="40" y="98" width="178" height="46" rx="4" stroke-width="0.5"/>
+  <text class="th" x="129" y="115" text-anchor="middle" dominant-baseline="central">/usr/  [A]</text>
+  <text class="ts" x="129" y="133" text-anchor="middle" dominant-baseline="central">immutable · verity-protected</text>
+
+  <rect class="p-purple" x="40" y="156" width="178" height="36" rx="4" stroke-width="0.5"/>
+  <text class="th" x="129" y="174" text-anchor="middle" dominant-baseline="central">verity data  [A]</text>
+
+  <rect class="p-purple" x="40" y="204" width="178" height="36" rx="4" stroke-width="0.5"/>
+  <text class="th" x="129" y="222" text-anchor="middle" dominant-baseline="central">PKCS#7 sig  [A]</text>
+
+  <text class="lsm" x="129" y="256" text-anchor="middle">2 partitions · dd to disk</text>
+
+  <!-- ═══ COL 2: FIRST BOOT ═══ -->
+
+  <!-- ghosted originals -->
+  <rect class="p-gray ghost" x="248" y="40" width="220" height="46" rx="4" stroke-width="0.5"/>
+  <text class="th ghost" x="358" y="57" text-anchor="middle" dominant-baseline="central">ESP</text>
+  <text class="ts ghost" x="358" y="75" text-anchor="middle" dominant-baseline="central">systemd-boot + UKI</text>
+
+  <rect class="p-purple ghost" x="248" y="98" width="220" height="46" rx="4" stroke-width="0.5"/>
+  <text class="th ghost" x="358" y="115" text-anchor="middle" dominant-baseline="central">/usr/  [A]</text>
+  <text class="ts ghost" x="358" y="133" text-anchor="middle" dominant-baseline="central">immutable · verity-protected</text>
+
+  <rect class="p-purple ghost" x="248" y="156" width="220" height="36" rx="4" stroke-width="0.5"/>
+  <text class="th ghost" x="358" y="174" text-anchor="middle" dominant-baseline="central">verity data  [A]</text>
+
+  <rect class="p-purple ghost" x="248" y="204" width="220" height="36" rx="4" stroke-width="0.5"/>
+  <text class="th ghost" x="358" y="222" text-anchor="middle" dominant-baseline="central">PKCS#7 sig  [A]</text>
+
+  <!-- new partitions -->
+  <rect class="p-teal" x="248" y="256" width="220" height="46" rx="4" stroke-width="0.5"/>
+  <text class="th" x="358" y="273" text-anchor="middle" dominant-baseline="central">/usr/  [B]  — empty</text>
+  <text class="ts" x="358" y="291" text-anchor="middle" dominant-baseline="central">awaiting first update</text>
+
+  <rect class="p-teal" x="248" y="314" width="220" height="36" rx="4" stroke-width="0.5"/>
+  <text class="th" x="358" y="332" text-anchor="middle" dominant-baseline="central">verity data  [B]  — empty</text>
+
+  <rect class="p-teal" x="248" y="362" width="220" height="36" rx="4" stroke-width="0.5"/>
+  <text class="th" x="358" y="380" text-anchor="middle" dominant-baseline="central">PKCS#7 sig  [B]  — empty</text>
+
+  <rect class="p-amber" x="248" y="410" width="220" height="46" rx="4" stroke-width="0.5"/>
+  <text class="th" x="358" y="427" text-anchor="middle" dominant-baseline="central">root fs  (LUKS2)</text>
+  <text class="ts" x="358" y="445" text-anchor="middle" dominant-baseline="central">TPM2-bound · generated locally</text>
+
+  <rect class="p-amber" x="248" y="468" width="106" height="36" rx="4" stroke-width="0.5"/>
+  <text class="th" x="301" y="486" text-anchor="middle" dominant-baseline="central">/home</text>
+
+  <rect class="p-amber" x="362" y="468" width="106" height="36" rx="4" stroke-width="0.5"/>
+  <text class="th" x="415" y="486" text-anchor="middle" dominant-baseline="central">swap</text>
+
+  <text class="lsm" x="358" y="518" text-anchor="middle">10 partitions total after first boot</text>
+
+  <!-- ═══ COL 3: UPDATE CYCLE ═══ -->
+
+  <rect class="p-purple" x="488" y="40" width="152" height="46" rx="4" stroke-width="0.5"/>
+  <text class="th" x="564" y="57" text-anchor="middle" dominant-baseline="central">/usr/ [A]  v0.7</text>
+  <text class="ts" x="564" y="75" text-anchor="middle" dominant-baseline="central">active boot slot</text>
+
+  <line class="arr" x1="564" y1="88" x2="564" y2="108" marker-end="url(#arrow)"/>
+
+  <rect class="p-teal" x="488" y="110" width="152" height="46" rx="4" stroke-width="0.5"/>
+  <text class="th" x="564" y="127" text-anchor="middle" dominant-baseline="central">/usr/ [B]  v0.8</text>
+  <text class="ts" x="564" y="145" text-anchor="middle" dominant-baseline="central">staged · signed · verified</text>
+
+  <line class="arr" x1="564" y1="158" x2="564" y2="178" marker-end="url(#arrow)"/>
+
+  <rect class="p-soft" x="488" y="180" width="152" height="46" rx="4" stroke-width="0.5"/>
+  <text class="th" x="564" y="197" text-anchor="middle" dominant-baseline="central">boot  [B]</text>
+  <text class="ts" x="564" y="215" text-anchor="middle" dominant-baseline="central">counter decrements</text>
+
+  <!-- fork -->
+  <line class="arr" x1="536" y1="228" x2="516" y2="256" marker-end="url(#arrow)"/>
+  <line class="arr" x1="592" y1="228" x2="612" y2="256" marker-end="url(#arrow)"/>
+  <text class="lsm" x="505" y="248" text-anchor="middle">✓ ok</text>
+  <text class="lsm" x="623" y="248" text-anchor="middle">✗ fail</text>
+
+  <rect class="p-green" x="488" y="258" width="68" height="52" rx="4" stroke-width="0.5"/>
+  <text class="th" x="522" y="278" text-anchor="middle" dominant-baseline="central">B good</text>
+  <text class="ts" x="522" y="296" text-anchor="middle" dominant-baseline="central">A wiped</text>
+
+  <rect class="p-coral" x="572" y="258" width="68" height="52" rx="4" stroke-width="0.5"/>
+  <text class="th" x="606" y="278" text-anchor="middle" dominant-baseline="central">rollback</text>
+  <text class="ts" x="606" y="296" text-anchor="middle" dominant-baseline="central">boot  [A]</text>
+
+  <!-- factory reset -->
+  <line x1="564" y1="314" x2="564" y2="332" stroke="#333" stroke-width="0.5" stroke-dasharray="3 3"/>
+  <rect class="p-soft" x="488" y="334" width="152" height="62" rx="4" stroke-width="0.5"/>
+  <text class="th" x="564" y="354" text-anchor="middle" dominant-baseline="central">factory reset</text>
+  <text class="ts" x="564" y="372" text-anchor="middle" dominant-baseline="central">erase root · home · swap</text>
+  <text class="ts" x="564" y="388" text-anchor="middle" dominant-baseline="central">→ first boot repeats</text>
+
+  <!-- ═══ LEGEND ═══ -->
+  <line x1="40" y1="542" x2="640" y2="542" stroke="#2a2a2a" stroke-width="0.5"/>
+
+  <rect class="leg-purple" x="40" y="556" width="10" height="10" rx="2"/>
+  <text class="ts" x="56" y="566">immutable /usr/ + verity</text>
+
+  <rect class="leg-teal" x="220" y="556" width="10" height="10" rx="2"/>
+  <text class="ts" x="236" y="566">update slot [B]</text>
+
+  <rect class="leg-amber" x="350" y="556" width="10" height="10" rx="2"/>
+  <text class="ts" x="366" y="566">encrypted writable</text>
+
+  <rect class="leg-green" x="490" y="556" width="10" height="10" rx="2"/>
+  <text class="ts" x="506" y="566">good boot</text>
+
+  <rect class="leg-coral" x="578" y="556" width="10" height="10" rx="2"/>
+  <text class="ts" x="594" y="566">rollback</text>
+
+</svg>
