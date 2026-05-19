@@ -1,98 +1,105 @@
-# HERMATIC
+![Hermatic — the immutable operating substrate](https://raw.githubusercontent.com/hermatic/.github/main/profile/futuristic_branding_banner.png)
 
-Immutable operating infrastructure.
+<br>
 
-HERMATIC is an image-based operating substrate focused on:
-- deterministic systems,
-- declarative state,
-- measured boot,
-- signed artifacts,
-- and reproducible deployments.
+<img src="https://raw.githubusercontent.com/hermatic/.github/main/profile/hermatic_github_avatar.png" width="48" align="left" style="margin-right: 14px">
 
-The system is designed to minimize drift, reduce operational entropy, and provide a trusted foundation for modern infrastructure workloads.
+**HERMATIC**
+`the immutable operating substrate`
 
----
+&nbsp;
 
-## Principles
-
-- Immutable by default
-- Atomic system updates
-- Declarative configuration
-- Trusted execution paths
-- Minimal operational surface
-- Reproducible state
+![phase 1.6](https://img.shields.io/badge/phase-1.6-7b5ea7?style=flat-square&labelColor=1a1a1f)
+![active dev](https://img.shields.io/badge/status-active%20dev-639922?style=flat-square&labelColor=1a1a1f)
+![not ready for use](https://img.shields.io/badge/⚠-not%20ready%20for%20use-a89840?style=flat-square&labelColor=1a1a1f)
+![MIT](https://img.shields.io/badge/license-MIT-555?style=flat-square&labelColor=1a1a1f)
 
 ---
 
-## Architecture
+## *Systems without drift.*
 
-HERMATIC treats the operating system as a verified and reproducible artifact rather than a mutable runtime environment.
+An image-based Linux OS built around a hermetic, immutable `/usr/`. dm-verity on every read. TPM2-bound secrets. Reproducible builds. Atomic A/B updates.
 
-Core concepts include:
-- image-based deployments,
-- measured boot,
-- TPM-backed trust,
-- atomic upgrades,
-- and isolated workload execution.
+Inspired by Poettering's ["Fitting Everything Together"](https://0pointer.net/blog/fitting-everything-together.html) — built from real distribution packages, deployed as signed images.
 
 ---
 
-## Philosophy
+## Core properties
 
-Everything intentional.
-
-HERMATIC reduces the operating environment to its essential structure:
-a stable, measurable, and reproducible substrate for systems that must remain predictable over time.
-
-State drift is treated as a liability.
-
----
-
-## Status
-
-HERMATIC is currently under active development.
-
-Early repositories and architecture components will appear here as the platform evolves.
-
----
-
-## Planned Components
-
-| Component | Purpose |
+| | |
 |---|---|
-| `hermatic-core` | Base operating image |
-| `hermatic-boot` | Boot and trust chain |
-| `hermatic-update` | Atomic image updates |
-| `hermatic-image` | Image generation tooling |
-| `hermatic-runtime` | Workload execution environment |
-| `hermaticctl` | System management CLI |
+| **Immutable core** | A verified foundation. Minimal. Permanent. |
+| **Composable layers** | Deterministic extensions. Reproducible. Declarative. |
+| **Isolated runtime** | Controlled execution environments via nspawn. |
+| **Verification** | Measured. Attested. Cryptographically verified. |
 
 ---
 
-## Design Goals
+## Trust chain
 
-- Minimal host systems
-- Deterministic infrastructure
-- Strong trust boundaries
-- Operational simplicity
-- Long-term maintainability
-- Cohesive system architecture
-
----
-
-The goal is narrower:
-
-- a minimal host system
-- reproducible deployments
-- signed system artifacts
-- atomic updates
-- declarative configuration
-- strong trust boundaries
-
-HERMATIC is designed as operating infrastructure: a stable substrate for systems that need to remain predictable over time.
+```
+firmware → systemd-boot → UKI → dm-verity → LUKS2 + TPM2 → userspace
+   │              │         │         │             │              │
+UEFI validates  picks    signed PE  /usr/ hash   root unseals   hermatic
+ boot loader   newest    kernel +   pinned in    on measured    apply →
+               UKI       initrd +   cmdline      boot state     workloads
+                         cmdline
+```
 
 ---
 
-## License
+## What it does today
 
+| | |
+|---|---|
+| `boot` | UKI — kernel + initrd + cmdline, signed as one PE binary |
+| `root` | hermetic `/usr/` verity-protected, read-only |
+| `state` | `/etc` and `/var` on a separate writable partition |
+| `config` | `hermatic.toml` — declarative, idempotent, applied on every boot |
+| `workloads` | nspawn containers, systemd PID 1, private veth network |
+| `debug` | sysext overlay — `strace` / `gdb` / `ltrace` on demand without modifying the base image |
+| `builds` | reproducible — two clean builds from the same source produce identical image hashes |
+| `tpm2` | present and measuring PCRs at boot |
+| `cli` | `hermatic apply` · `parse` · `status` (Rust, statically linked musl) |
 
+---
+
+## Roadmap
+
+```
+✓  Phase 0   MKOSI baseline — UKI boots into verity rootfs in QEMU
+✓  Phase 1   Declarative TOML config, hermatic CLI, nspawn workloads, sysext debug overlay
+→  Phase 2   A/B atomic updates with automatic rollback                         ← you are here
+·  Phase 3   Secure Boot key enrollment, TPM2 attestation, pcrlock policy
+·  v1.0.0   Full CLI, reproducibility audit, signed release, provenance
+```
+
+---
+
+## Design principles
+
+1. **Images, not packages** at runtime. Packages are a build-time tool.
+2. **Every read verified.** dm-verity on `/usr/` — not just at mount time.
+3. **Secrets sealed to boot state.** TPM2 binds keys to the measured chain.
+4. **Updates atomic, rollback automatic.** Boot counter + A/B slots.
+5. **Factory reset is a reboot.** Erase the writable partition — done.
+6. **Reproducible.** Identical inputs produce identical image bytes.
+7. **Cut scope, never rigor.** Drop features; never drop the guarantees.
+
+---
+
+## Repository
+
+| Repo | Description |
+|---|---|
+| [hermatic/hermatic](https://github.com/hermatic/hermatic) | OS image, CLI, mkosi config, partition definitions |
+
+---
+
+## Stack
+
+`mkosi` · `systemd-boot` · `ukify` · `dm-verity` · `LUKS2` · `systemd-repart` · `systemd-sysupdate` · `systemd-nspawn` · `systemd-sysext` · `systemd-creds` · `TPM2` · `Rust`
+
+---
+
+<sub>Solo dev · part-time · ~12 h/week · MIT license · inspired by <a href="https://0pointer.net/blog/fitting-everything-together.html">Lennart Poettering</a></sub>
