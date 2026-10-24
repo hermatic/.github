@@ -1,18 +1,7 @@
 <div align="center">
 
-```
-███████
-███████          ██
-███████          ██
-███████          ██
-███████          ██
-███████ ████████ ██
-███████          ██
-███████          ██
-███████          ██
-███████          ██
-███████
-```
+<img src="https://raw.githubusercontent.com/hermatic/.github/main/profile/hermatic-logo.png" width="128" alt="Hermatic logo">
+
 
 # HERMATIC
 
